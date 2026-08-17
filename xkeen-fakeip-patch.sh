@@ -1,13 +1,4 @@
 #!/bin/sh
-# XKeen: убрать/вернуть 198.18.0.0/15 в ipv4_exclude
-#
-#   curl -fsSL <url> | sh              # apply (по умолчанию)
-#   curl -fsSL <url> | sh -s -- apply
-#   curl -fsSL <url> | sh -s -- revert
-#
-# ВАЖНО: только форма "sh -s -- revert". "sh revert" не сработает —
-# sh воспримет revert как имя файла, а не как аргумент.
-# Патч слетает при opkg upgrade xkeen, после обновления запустить apply заново.
 
 F=/opt/etc/init.d/S05xkeen
 B=$F.bak
