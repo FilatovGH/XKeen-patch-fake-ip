@@ -20,8 +20,6 @@ curl -fsSL https://raw.githubusercontent.com/FilatovGH/XKeen-patch-fake-ip/main/
 curl -fsSL https://raw.githubusercontent.com/FilatovGH/XKeen-patch-fake-ip/main/xkeen-fakeip-patch.sh | sh -s -- revert
 ```
 
-Аргумент передаётся только через `sh -s --`. Без аргумента выполняется `apply`.
-
 ## Что делает
 
 `apply` — бэкап в `S05xkeen.bak`, удаление подсети из строк `ipv4_exclude`, `xkeen -restart`, проверка что правил с `198.18.*` в цепочке `xkeen` не осталось.
