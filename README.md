@@ -8,11 +8,16 @@ XKeen исключает `198.18.0.0/15` из проксирования. Mihomo
 
 ## Запуск
 
-```sh
-BASE=https://raw.githubusercontent.com/FilatovGH/XKeen-patch-fake-ip/main/xkeen-fakeip-patch.sh
+Применить:
 
-curl -fsSL $BASE | sh                 # apply
-curl -fsSL $BASE | sh -s -- revert    # откат
+```sh
+curl -fsSL https://raw.githubusercontent.com/FilatovGH/XKeen-patch-fake-ip/main/xkeen-fakeip-patch.sh | sh
+```
+
+Откатить:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/FilatovGH/XKeen-patch-fake-ip/main/xkeen-fakeip-patch.sh | sh -s -- revert
 ```
 
 Аргумент передаётся только через `sh -s --`. Без аргумента выполняется `apply`.
