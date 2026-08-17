@@ -35,10 +35,13 @@ if [ "$A" = apply ]; then
   else cp -p "$F" "$B" || fail "cp"; ok; fi
 
   step "удаление подсети" 3
-  has || { echo "не требуется"; echo; echo "  патч уже применён"; exit 0; }
-  sed -i "/ipv4_exclude=/ s| *$N||g" "$F" || fail "sed"
-  has && fail "подсеть осталась, формат строки изменился"
-  ok
+  if has; then
+    sed -i "/ipv4_exclude=/ s| *$N||g" "$F" || fail "sed"
+    has && fail "подсеть осталась, формат строки изменился"
+    ok
+  else
+    echo "не требуется"
+  fi
 else
   step "проверка бэкапа" 2
   [ -f "$B" ] || fail "$B не найден"
@@ -52,6 +55,7 @@ fi
 
 step "перезапуск XKeen" 4
 xkeen -restart >/dev/null 2>&1 || fail "xkeen -restart вернул ошибку"
+sleep 2
 ok
 
 step "проверка правил" 5
