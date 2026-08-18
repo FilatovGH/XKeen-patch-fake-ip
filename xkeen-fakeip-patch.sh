@@ -3,6 +3,8 @@
 #   curl -fsSL <url> | sh              # apply
 #   curl -fsSL <url> | sh -s -- revert # откат
 # Патч слетает при opkg upgrade xkeen — запускать apply заново.
+# DNS Override обязателен для fake-ip mihomo на Keenetic: без него
+# роутер резолвит через ndm-прокси, а не через mihomo.
 
 F=/opt/etc/init.d/S05xkeen
 B=$F.bak
@@ -11,8 +13,9 @@ A=${1:-apply}
 CUR=старт
 
 trap 'echo; echo "  ПРЕРВАНО: $CUR"; exit 130' INT TERM
-step() { CUR="$1"; printf '  [%s/5] %-34s' "$2" "$1"; }
+step() { CUR="$1"; printf '  [%s/6] %-34s' "$2" "$1"; }
 ok()   { echo "ok"; }
+warn() { echo "внимание: $1"; }
 fail() { echo "СБОЙ"; echo "  причина: $1"; exit 1; }
 has()  { grep 'ipv4_exclude=' "$F" | grep -q "$N"; }
 cnt()  { echo $(( $(iptables -t nat -L xkeen -n 2>/dev/null | grep -c 198.18) \
@@ -58,12 +61,33 @@ xkeen -restart >/dev/null 2>&1 || fail "xkeen -restart вернул ошибку
 sleep 2
 ok
 
-step "проверка правил" 5
+step "DNS Override" 5
+if [ "$A" = apply ]; then
+  if ndmc -c "opkg dns-override" >/dev/null 2>&1; then
+    ok
+  else
+    warn "ndmc вернул ошибку, включите вручную: ndmc -c \"opkg dns-override\""
+  fi
+else
+  if ndmc -c "no opkg dns-override" >/dev/null 2>&1; then
+    ok
+  else
+    warn "ndmc вернул ошибку, выключите вручную: ndmc -c \"no opkg dns-override\""
+  fi
+fi
+
+step "сохранение конфигурации" 6
 iptables -t nat -L xkeen -n >/dev/null 2>&1 || fail "цепочка xkeen не создана"
 C=$(cnt)
+if ndmc -c "system configuration save" >/dev/null 2>&1; then
+  ok
+else
+  warn "ndmc вернул ошибку, сохраните вручную: ndmc -c \"system configuration save\""
+fi
+
 case "$A:$C" in
-  apply:0)  ok; echo; echo "  ГОТОВО — правил 198.18.* в цепочке xkeen: 0" ;;
+  apply:0)  echo; echo "  ГОТОВО — правил 198.18.* в цепочке xkeen: 0" ;;
   apply:*)  fail "правила остались ($C)" ;;
   revert:0) fail "правила не вернулись" ;;
-  *)        ok; echo; echo "  ГОТОВО — правил 198.18.* в цепочке xkeen: $C" ;;
+  *)        echo; echo "  ГОТОВО — правил 198.18.* в цепочке xkeen: $C" ;;
 esac
