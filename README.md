@@ -22,7 +22,7 @@ curl -fsSL https://raw.githubusercontent.com/FilatovGH/XKeen-patch-fake-ip/main/
 
 ## После обновления XKeen
 
-`opkg upgrade xkeen` перезаписывает `S05xkeen`, патч слетает молча. Запускать `apply` заново.
+После обновления XKeen перезаписывает `S05xkeen`, патч слетает. Требуется применить заново.
 
 ```sh
 grep -c '198\.18\.0\.0/15' /opt/etc/init.d/S05xkeen   # 0 = патч на месте
