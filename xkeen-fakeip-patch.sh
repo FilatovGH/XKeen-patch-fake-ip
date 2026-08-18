@@ -63,26 +63,26 @@ ok
 
 step "DNS Override" 5
 if [ "$A" = apply ]; then
-  if ndmc -c "opkg dns-override" >/dev/null 2>&1; then
+  if ndmc -c "opkg dns-override"; then
     ok
   else
-    warn "ndmc вернул ошибку, включите вручную: ndmc -c \"opkg dns-override\""
+    warn "не удалось включить, выполните вручную: ndmc -c \"opkg dns-override\""
   fi
 else
-  if ndmc -c "no opkg dns-override" >/dev/null 2>&1; then
+  if ndmc -c "no opkg dns-override"; then
     ok
   else
-    warn "ndmc вернул ошибку, выключите вручную: ndmc -c \"no opkg dns-override\""
+    warn "не удалось выключить, выполните вручную: ndmc -c \"no opkg dns-override\""
   fi
 fi
 
 step "сохранение конфигурации" 6
 iptables -t nat -L xkeen -n >/dev/null 2>&1 || fail "цепочка xkeen не создана"
 C=$(cnt)
-if ndmc -c "system configuration save" >/dev/null 2>&1; then
+if ndmc -c "system configuration save"; then
   ok
 else
-  warn "ndmc вернул ошибку, сохраните вручную: ndmc -c \"system configuration save\""
+  warn "не удалось сохранить, выполните вручную: ndmc -c \"system configuration save\""
 fi
 
 case "$A:$C" in
